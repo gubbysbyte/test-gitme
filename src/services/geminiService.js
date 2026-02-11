@@ -3,7 +3,7 @@ const config = require('../config/env');
 
 const genAI = new GoogleGenerativeAI(config.GEMINI_API_KEY);
 // Using a model alias that refers to a stable version
-const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 async function summarizeCommit(commitMessage, diff) {
     const prompt = `
