@@ -1,6 +1,6 @@
 # GitMe - AI Git Summarizer Bot 🤖
 
-GitMe is a Discord bot that watches your GitHub repositories. When you push a commit, it uses **Google Gemini 1.5 Flash** to:
+GitMe is a Discord bot that watches your GitHub repositories. When you push a commit, it uses **Google Gemini 2.5 Flash** to:
 1.  Read the technical commit message.
 2.  Summarize it into simple, layman terms.
 3.  Post a beautiful notification to your Discord channel.
@@ -10,6 +10,7 @@ GitMe is a Discord bot that watches your GitHub repositories. When you push a co
 *   🧠 **AI-Powered**: Uses Google's generative AI to explain code changes.
 *   🛡️ **Smart Limits**: Includes auto-retry logic for API rate limits (429 errors).
 *   🎨 **Rich Embeds**: Sends formatted cards with repo links, author info, and timestamps.
+*   📂 **Modular Architecture**: Professional structure with separate services, controllers, and config.
 
 ## Prerequisites
 *   [Node.js](https://nodejs.org/) (v18 or higher)
@@ -103,9 +104,38 @@ node test-webhook.js
 | :--- | :--- | :--- |
 | **TokenInvalid** | Empty `.env` or bad token | Check `.env` file. Ensure values are in quotes `""`. |
 | **Missing Access** | Bot not in channel/server | Invite bot to server. Give `View Channel` & `Send Message` permissions. |
-| **Gemini 404** | Invalid Model Name | Use `gemini-1.5-flash` or `gemini-flash-latest` (already set in code). |
+| **Gemini 404** | Invalid Model Name | Use `gemini-2.5-flash` or `gemini-flash-latest` (already set in code). |
 | **Rate Limit (429)** | Hitting API too fast | Wait. The bot has auto-retry logic and will try again in 2s, 4s, 8s. |
 | **Webhook 404** | Wrong URL in GitHub | Ensure Payload URL ends with `/webhook` (e.g., `...ngrok-free.app/webhook`). |
+
+## ☁️ Deployment (Render + UptimeRobot)
+
+Since Heroku is no longer free without a card, we use **Render.com**.
+To prevent the bot from sleeping after 15 minutes, use **UptimeRobot**.
+
+### Step 1: Deploy to Render
+1.  Push this code to GitHub.
+2.  Log in to [Render.com](https://render.com).
+3.  **New +** -> **Web Service**.
+4.  Connect your repo.
+5.  **Build Command**: `npm install`
+6.  **Start Command**: `npm start`
+7.  **Environment Variables**: Add your keys (`DISCORD_TOKEN`, etc).
+8.  Click **Create Web Service**.
+
+### Step 2: Keep It Awake (Free 24/7)
+1.  Copy your new Render URL (e.g., `https://gitme-bot.onrender.com`).
+2.  Go to [UptimeRobot.com](https://uptimerobot.com) (Free account).
+3.  **Add New Monitor**:
+    *   **Type**: HTTP(s).
+    *   **Friendly Name**: My GitMe Bot.
+    *   **URL**: Paste your Render URL.
+    *   **Monitoring Interval**: 5 minutes.
+4.  Click **Create Monitor**.
+
+### ⚠️ IMPORTANT: Update Webhook
+Update your GitHub Webhook URL to:
+`https://gitme-bot.onrender.com/webhook`
 
 ## License
 ISC

@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: gitme-bot
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: DISCORD_TOKEN
+        sync: false
+      - key: DISCORD_CHANNEL_ID
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: NODE_VERSION
+        value: 20.9.0
