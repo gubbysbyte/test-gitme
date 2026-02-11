@@ -94,15 +94,15 @@ app.post('/webhook', async (req, res) => {
             // Create Discord Embed
             const embed = new EmbedBuilder()
                 .setColor(0x0099FF)
-                .setTitle(`New Commit in ${repoName}`)
+                .setTitle(`New Commit in "${repoName}" Repository`)
                 .setURL(url)
                 .setAuthor({ name: committerName })
-                .setDescription(`**AI Summary:**\n${summary}`)
+                .setDescription(`**Summary:**\n${summary}`)
                 .addFields(
                     { name: 'Commit Message', value: message },
                     { name: 'Time', value: new Date(timestamp).toLocaleString() }
                 )
-                .setFooter({ text: 'GitMe Bot' })
+                .setFooter({ text: 'GitMe' })
                 .setTimestamp();
 
             // Send to Channel
