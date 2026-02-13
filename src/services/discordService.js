@@ -25,7 +25,7 @@ const sendCommitNotification = async (repoName, committerName, message, url, sum
 
         const embed = new EmbedBuilder()
             .setColor(0x0099FF)
-            .setTitle(`New Commit in "${repoName}" Repository`)
+            .setTitle(`Repository: ${repoName}`)
             .setURL(url)
             .setAuthor({ name: committerName })
             .setDescription(`**Summary:**\n${summary}`)
