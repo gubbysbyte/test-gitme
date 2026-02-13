@@ -31,7 +31,7 @@ const sendCommitNotification = async (repoName, committerName, message, url, sum
             .setDescription(`**Summary:**\n${summary}`)
             .addFields(
                 { name: 'Commit Message', value: message },
-                { name: 'Time', value: new Date(timestamp).toLocaleString() }
+                { name: 'Date', value: new Date(timestamp).toLocaleDateString() }
             )
             .setFooter({ text: 'GitMe' })
             .setTimestamp();
