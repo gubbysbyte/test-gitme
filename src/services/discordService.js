@@ -23,6 +23,13 @@ const getEmbedColor = (message) => {
     return 0x0099FF; // Default Blue
 };
 
+const getPRColor = (action, merged) => {
+    if (merged) return 0x6f42c1; // Purple (Merged)
+    if (action === 'opened' || action === 'reopened') return 0x2ECC71; // Green
+    if (action === 'closed') return 0xE74C3C; // Red
+    return 0x0099FF; // Blue
+};
+
 const sendCommitNotification = async (repoName, branch, committerName, message, url, summary, timestamp, commitHash, avatarUrl) => {
     try {
         const channel = await client.channels.fetch(config.DISCORD_CHANNEL_ID);
@@ -55,4 +62,40 @@ const sendCommitNotification = async (repoName, branch, committerName, message, 
     }
 };
 
-module.exports = { initDiscord, sendCommitNotification, client };
+const sendPRNotification = async (repoName, action, prTitle, prUrl, prBody, authorName, authorAvatar, baseBranch, headBranch, timestamp, isMerged) => {
+    try {
+        const channel = await client.channels.fetch(config.DISCORD_CHANNEL_ID);
+        if (!channel) {
+            console.error("Channel not found!");
+            return false;
+        }
+
+        let statusText = action.toUpperCase();
+        if (isMerged) statusText = 'MERGED 🟣';
+        else if (action === 'closed') statusText = 'CLOSED 🔴';
+        else if (action === 'opened') statusText = 'OPENED 🟢';
+
+        const embed = new EmbedBuilder()
+            .setColor(getPRColor(action, isMerged))
+            .setTitle(`PR: ${prTitle}`)
+            .setURL(prUrl)
+            .setAuthor({ name: authorName, iconURL: authorAvatar })
+            .setThumbnail(authorAvatar)
+            .setDescription(`**Status:** ${statusText}\n\n${prBody ? (prBody.length > 500 ? prBody.substring(0, 497) + '...' : prBody) : 'No description provided.'}`)
+            .addFields(
+                { name: 'Repository', value: repoName, inline: true },
+                { name: 'From Branch', value: headBranch, inline: true },
+                { name: 'To Branch', value: baseBranch, inline: true }
+            )
+            .setFooter({ text: 'GitMe • Pull Request' })
+            .setTimestamp(new Date(timestamp));
+
+        await channel.send({ embeds: [embed] });
+        return true;
+    } catch (error) {
+        console.error("Error sending PR message to Discord:", error);
+        return false;
+    }
+};
+
+module.exports = { initDiscord, sendCommitNotification, sendPRNotification, client };

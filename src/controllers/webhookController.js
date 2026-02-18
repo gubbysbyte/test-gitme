@@ -1,5 +1,5 @@
 const { summarizeCommit } = require('../services/geminiService');
-const { sendCommitNotification } = require('../services/discordService');
+const { sendCommitNotification, sendPRNotification } = require('../services/discordService');
 
 const handleWebhook = async (req, res) => {
     const event = req.headers['x-github-event'];
@@ -53,6 +53,41 @@ const handleWebhook = async (req, res) => {
             }
         }
         return res.status(200).send('Webhook processed');
+    }
+
+    if (event === 'pull_request') {
+        const payload = req.body;
+        const action = payload.action;
+        const pr = payload.pull_request;
+        const repoName = payload.repository.name;
+        
+        // Only process main actions to avoid spam (e.g., ignore 'labeled', 'assigned')
+        if (['opened', 'closed', 'reopened'].includes(action)) {
+            const authorName = pr.user.login;
+            const authorAvatar = pr.user.avatar_url;
+            const prTitle = pr.title;
+            const prUrl = pr.html_url;
+            const prBody = pr.body || '';
+            const baseBranch = pr.base.ref;
+            const headBranch = pr.head.ref;
+            const timestamp = pr.updated_at || pr.created_at;
+            const isMerged = pr.merged || false;
+
+            await sendPRNotification(
+                repoName,
+                action,
+                prTitle,
+                prUrl,
+                prBody,
+                authorName,
+                authorAvatar,
+                baseBranch,
+                headBranch,
+                timestamp,
+                isMerged
+            );
+        }
+        return res.status(200).send('PR Event processed');
     }
 
     res.status(200).send('Event received');
