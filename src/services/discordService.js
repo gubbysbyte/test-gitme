@@ -106,6 +106,8 @@ const sendPRNotification = async (repoName, action, prTitle, prUrl, prBody, auth
 
 const sendIssueNotification = async (repoName, action, issueTitle, issueUrl, issueBody, authorName, authorAvatar, timestamp) => {
     try {
+        console.log(`Sending Issue Notification: ${action} - ${issueTitle}`);
+
         const channel = await client.channels.fetch(config.DISCORD_CHANNEL_ID);
         if (!channel) {
             console.error("Channel not found!");
@@ -119,10 +121,10 @@ const sendIssueNotification = async (repoName, action, issueTitle, issueUrl, iss
 
         const embed = new EmbedBuilder()
             .setColor(getIssueColor(action))
-            .setTitle(`Issue: ${issueTitle}`)
+            .setTitle(`Issue: ${issueTitle.length > 240 ? issueTitle.substring(0, 237) + '...' : issueTitle}`)
             .setURL(issueUrl)
-            .setAuthor({ name: authorName, iconURL: authorAvatar })
-            .setThumbnail(authorAvatar)
+            .setAuthor({ name: authorName, iconURL: authorAvatar || undefined })
+            .setThumbnail(authorAvatar || null)
             .setDescription(`**Status:** ${statusText}\n\n${issueBody ? (issueBody.length > 500 ? issueBody.substring(0, 497) + '...' : issueBody) : 'No description provided.'}`)
             .addFields(
                 { name: 'Repository', value: repoName, inline: true }

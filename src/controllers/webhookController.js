@@ -94,11 +94,13 @@ const handleWebhook = async (req, res) => {
         const payload = req.body;
         const action = payload.action;
         const issue = payload.issue;
-        const repoName = payload.repository.name;
+        const repoName = payload.repository ? payload.repository.name : 'Unknown Repository';
+
+        console.log(`Received Issue Event: ${action} for ${repoName}`);
 
         if (['opened', 'closed', 'reopened'].includes(action)) {
-            const authorName = issue.user.login;
-            const authorAvatar = issue.user.avatar_url;
+            const authorName = issue.user ? issue.user.login : 'Unknown';
+            const authorAvatar = issue.user ? issue.user.avatar_url : '';
             const issueTitle = issue.title;
             const issueUrl = issue.html_url;
             const issueBody = issue.body || '';
