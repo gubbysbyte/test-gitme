@@ -13,6 +13,8 @@ const handleWebhook = async (req, res) => {
         const repoName = payload.repository.name;
         const pusherName = payload.pusher.name;
         const commits = payload.commits;
+        const branch = payload.ref ? payload.ref.replace('refs/heads/', '') : 'unknown';
+        const avatarUrl = payload.sender ? payload.sender.avatar_url : '';
 
         // Process only the latest commit to avoid spam
         if (commits && commits.length > 0) {
@@ -31,6 +33,7 @@ const handleWebhook = async (req, res) => {
                 const url = commit.url;
                 const timestamp = commit.timestamp;
                 const authorForThisCommit = commit.author.name;
+                const commitHash = commit.id;
 
                 // 1. Generate AI Summary
                 const summary = await summarizeCommit(message, null); // Diff is null for now
@@ -38,11 +41,14 @@ const handleWebhook = async (req, res) => {
                 // 2. Send to Discord
                 await sendCommitNotification(
                     repoName,
+                    branch,
                     authorForThisCommit, // Use commit author, not just pusher
                     message,
                     url,
                     summary,
-                    timestamp
+                    timestamp,
+                    commitHash,
+                    avatarUrl
                 );
             }
         }
