@@ -30,6 +30,12 @@ const getPRColor = (action, merged) => {
     return 0x0099FF; // Blue
 };
 
+const getIssueColor = (action) => {
+    if (action === 'opened' || action === 'reopened') return 0x2ECC71; // Green
+    if (action === 'closed') return 0xE74C3C; // Red
+    return 0xE67E22; // Orange
+};
+
 const sendCommitNotification = async (repoName, branch, committerName, message, url, summary, timestamp, commitHash, avatarUrl) => {
     try {
         const channel = await client.channels.fetch(config.DISCORD_CHANNEL_ID);
@@ -98,4 +104,38 @@ const sendPRNotification = async (repoName, action, prTitle, prUrl, prBody, auth
     }
 };
 
-module.exports = { initDiscord, sendCommitNotification, sendPRNotification, client };
+const sendIssueNotification = async (repoName, action, issueTitle, issueUrl, issueBody, authorName, authorAvatar, timestamp) => {
+    try {
+        const channel = await client.channels.fetch(config.DISCORD_CHANNEL_ID);
+        if (!channel) {
+            console.error("Channel not found!");
+            return false;
+        }
+
+        let statusText = action.toUpperCase();
+        if (action === 'opened') statusText = 'OPENED 🟢';
+        else if (action === 'closed') statusText = 'CLOSED 🔴';
+        else if (action === 'reopened') statusText = 'REOPENED 🔄';
+
+        const embed = new EmbedBuilder()
+            .setColor(getIssueColor(action))
+            .setTitle(`Issue: ${issueTitle}`)
+            .setURL(issueUrl)
+            .setAuthor({ name: authorName, iconURL: authorAvatar })
+            .setThumbnail(authorAvatar)
+            .setDescription(`**Status:** ${statusText}\n\n${issueBody ? (issueBody.length > 500 ? issueBody.substring(0, 497) + '...' : issueBody) : 'No description provided.'}`)
+            .addFields(
+                { name: 'Repository', value: repoName, inline: true }
+            )
+            .setFooter({ text: 'GitMe • Issue' })
+            .setTimestamp(new Date(timestamp));
+
+        await channel.send({ embeds: [embed] });
+        return true;
+    } catch (error) {
+        console.error("Error sending Issue message to Discord:", error);
+        return false;
+    }
+};
+
+module.exports = { initDiscord, sendCommitNotification, sendPRNotification, sendIssueNotification, client };

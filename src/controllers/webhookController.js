@@ -1,5 +1,5 @@
 const { summarizeCommit } = require('../services/geminiService');
-const { sendCommitNotification, sendPRNotification } = require('../services/discordService');
+const { sendCommitNotification, sendPRNotification, sendIssueNotification } = require('../services/discordService');
 
 const handleWebhook = async (req, res) => {
     const event = req.headers['x-github-event'];
@@ -88,6 +88,34 @@ const handleWebhook = async (req, res) => {
             );
         }
         return res.status(200).send('PR Event processed');
+    }
+
+    if (event === 'issues') {
+        const payload = req.body;
+        const action = payload.action;
+        const issue = payload.issue;
+        const repoName = payload.repository.name;
+
+        if (['opened', 'closed', 'reopened'].includes(action)) {
+            const authorName = issue.user.login;
+            const authorAvatar = issue.user.avatar_url;
+            const issueTitle = issue.title;
+            const issueUrl = issue.html_url;
+            const issueBody = issue.body || '';
+            const timestamp = issue.updated_at || issue.created_at;
+
+            await sendIssueNotification(
+                repoName,
+                action,
+                issueTitle,
+                issueUrl,
+                issueBody,
+                authorName,
+                authorAvatar,
+                timestamp
+            );
+        }
+        return res.status(200).send('Issue Event processed');
     }
 
     res.status(200).send('Event received');
