@@ -1,9 +1,4 @@
-const { GoogleGenerativeAI } = require('@google/generative-ai');
 const config = require('../config/env');
-
-const genAI = new GoogleGenerativeAI(config.GEMINI_API_KEY);
-// Using a model alias that refers to a stable version
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 async function summarizeCommit(commitMessage, diff) {
     const prompt = `
@@ -24,11 +19,27 @@ async function summarizeCommit(commitMessage, diff) {
 
     while (retries > 0) {
         try {
-            const result = await model.generateContent(prompt);
-            const response = await result.response;
-            return response.text();
+            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${config.GEMINI_API_KEY}`,
+                    "Content-Type": "application/json",
+                    "HTTP-Referer": "https://github.com/gitme",
+                    "X-Title": "GitMe"
+                },
+                body: JSON.stringify({
+                    "model": "google/gemini-2.0-flash-lite-preview-02-05:free",
+                    "messages": [{ "role": "user", "content": prompt }]
+                })
+            });
+
+            if (response.status === 429) throw new Error('429 Rate Limit');
+            if (!response.ok) throw new Error(`OpenRouter API Error: ${response.status}`);
+
+            const data = await response.json();
+            return data.choices[0].message.content;
         } catch (error) {
-            if (error.status === 429 || error.message.includes('429')) {
+            if (error.message.includes('429')) {
                 console.log(`Rate limit hit. Retrying in ${delay / 1000}s...`);
                 await new Promise(resolve => setTimeout(resolve, delay));
                 delay *= 2; // Exponential backoff: 2s -> 4s -> 8s
