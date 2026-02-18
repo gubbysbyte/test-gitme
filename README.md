@@ -1,15 +1,21 @@
 # GitMe - AI Git Summarizer Bot 🤖
 
-GitMe is a Discord bot that watches your GitHub repositories. When you push a commit, it uses **Google Gemini 2.5 Flash** to:
-1.  Read the technical commit message.
-2.  Summarize it into simple, layman terms.
-3.  Post a beautiful notification to your Discord channel.
+GitMe is a Discord bot that watches your GitHub repositories. It tracks **Commits**, **Pull Requests**, and **Issues**, using **Google Gemini 2.5 Flash** to:
+1.  Analyze technical commit messages.
+2.  Summarize changes into simple, layman terms.
+3.  Post beautiful, color-coded notifications to your Discord channel.
 
 ## Features
 *   🚀 **Lightweight**: Built with Node.js, Express, and Discord.js.
 *   🧠 **AI-Powered**: Uses Google's generative AI to explain code changes.
-*   🛡️ **Smart Limits**: Includes auto-retry logic for API rate limits (429 errors).
-*   🎨 **Rich Embeds**: Sends formatted cards with repo links, author info, and timestamps.
+*   🔔 **Event Tracking**:
+    *   **Commits**: AI summaries, branch info, and commit hashes.
+    *   **Pull Requests**: Notifications for Opened, Closed, Reopened, and Merged events.
+    *   **Issues**: Notifications for Opened, Closed, and Reopened issues.
+*   🎨 **Smart Embeds**:
+    *   **Dynamic Colors**: Green for Features/Opens, Red for Fixes/Closures, Purple for Merges.
+    *   **Rich Details**: Includes author avatars, branch names, and truncated messages for readability.
+*   �️ **Smart Limits**: Includes auto-retry logic for API rate limits (429 errors).
 *   📂 **Modular Architecture**: Professional structure with separate services, controllers, and config.
 
 ## Prerequisites
@@ -73,7 +79,7 @@ Copy the **Forwarding URL** (e.g., `https://abcdef123.ngrok-free.app`).
 3.  **Payload URL**: Paste your ngrok URL and append `/webhook` at the end.
     *   Example: `https://abcdef123.ngrok-free.app/webhook`
 4.  **Content type**: Select `application/json`.
-5.  **Which events?**: Select **Just the push event**.
+5.  **Which events?**: Select **Let me select individual events** and check: **Pushes**, **Pull requests**, **Issues**.
 6.  Click **Add webhook**.
 
 ---
