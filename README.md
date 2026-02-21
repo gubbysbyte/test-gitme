@@ -1,5 +1,10 @@
 # GitMe - AI Git Summarizer Bot 🤖
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/Node.js-v18%2B-green.svg)](https://nodejs.org/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Discord.js](https://img.shields.io/badge/Discord.js-v14-5865F2.svg)](https://discord.js.org/)
+
 GitMe is a Discord bot that watches your GitHub repositories. It tracks **Commits**, **Pull Requests**, and **Issues**, using **Google Gemini 2.5 Flash** to:
 1.  Analyze technical commit messages.
 2.  Summarize changes into simple, layman terms.
@@ -15,7 +20,7 @@ GitMe is a Discord bot that watches your GitHub repositories. It tracks **Commit
 *   🎨 **Smart Embeds**:
     *   **Dynamic Colors**: Green for Features/Opens, Red for Fixes/Closures, Purple for Merges.
     *   **Rich Details**: Includes author avatars, branch names, and truncated messages for readability.
-*   �️ **Smart Limits**: Includes auto-retry logic for API rate limits (429 errors).
+*   🛡️ **Smart Limits**: Includes auto-retry logic for API rate limits (429 errors).
 *   📂 **Modular Architecture**: Professional structure with separate services, controllers, and config.
 
 ## Prerequisites
@@ -30,7 +35,7 @@ GitMe is a Discord bot that watches your GitHub repositories. It tracks **Commit
 
 ### 1. Clone & Install
 ```bash
-git clone https://github.com/yourusername/gitme.git
+git clone https://github.com/gubbysbyte/gitme.git
 cd gitme
 npm install
 ```
@@ -99,7 +104,9 @@ Copy the **Forwarding URL** (e.g., `https://abcdef123.ngrok-free.app`).
 ### Manual Test Script
 You can also simulate a webhook without pushing to GitHub:
 ```bash
-node test-webhook.js
+node tests/test-manual-events.js push
+node tests/test-manual-events.js issue
+node tests/test-manual-events.js pr
 ```
 
 ---
@@ -143,5 +150,22 @@ To prevent the bot from sleeping after 15 minutes, use **UptimeRobot**.
 Update your GitHub Webhook URL to:
 `https://gitme-bot.onrender.com/webhook`
 
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details on how to get started.
+
+Please note that this project has a [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you agree to abide by its terms.
+
+## 🔒 Security
+
+To report a security vulnerability, please see our [Security Policy](SECURITY.md).
+
+## 📝 Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a list of notable changes.
+
 ## License
-ISC
+
+This project is licensed under the [MIT License](LICENSE).

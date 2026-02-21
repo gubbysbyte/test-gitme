@@ -1,16 +1,34 @@
 {
   "name": "gitme",
   "version": "1.0.0",
-  "description": "",
+  "description": "AI-powered Discord bot that watches GitHub repos and posts smart, color-coded notifications using Google Gemini",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "discord",
+    "discord-bot",
+    "github",
+    "webhook",
+    "ai",
+    "gemini",
+    "git",
+    "notifications",
+    "commit-summary"
+  ],
+  "author": "Kailash (https://github.com/gubbysbyte)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gubbysbyte/gitme.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gubbysbyte/gitme/issues"
+  },
+  "homepage": "https://github.com/gubbysbyte/gitme#readme",
   "packageManager": "pnpm@10.29.2",
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
