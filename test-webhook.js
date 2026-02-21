@@ -4,20 +4,23 @@ async function sendTestWebhook() {
     const payload = {
         ref: "refs/heads/main",
         repository: {
-            name: "gitme-test-repo",
-            html_url: "https://github.com/test/gitme-test-repo"
+            name: "ravaki",
+            html_url: "https://github.com/test/ravaki"
         },
         pusher: {
-            name: "TestUser"
+            name: "Himanshu"
+        },
+        sender: {
+            avatar_url: "https://avatars.githubusercontent.com/u/12345678?v=4"
         },
         commits: [
             {
-                id: "test-commit-id",
-                message: "feat: implemented the new login screen with dark mode",
+                id: "6ccfdf5",
+                message: "feat(agency-advertiser): Agency Account Manager flows, advertiser approval, invite page, transaction history",
                 timestamp: new Date().toISOString(),
-                url: "https://github.com/test/gitme-test-repo/commit/test-commit-id",
+                url: "https://github.com/test/ravaki/commit/6ccfdf5",
                 author: {
-                    name: "TestUser"
+                    name: "Atul"
                 }
             }
         ]
@@ -29,7 +32,8 @@ async function sendTestWebhook() {
         const response = await fetch('http://localhost:3000/webhook', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-GitHub-Event': 'push'
             },
             body: JSON.stringify(payload)
         });

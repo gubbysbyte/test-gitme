@@ -19,25 +19,24 @@ async function summarizeCommit(commitMessage, diff) {
 
     while (retries > 0) {
         try {
-            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${config.GEMINI_API_KEY}`, {
                 method: "POST",
                 headers: {
-                    "Authorization": `Bearer ${config.GEMINI_API_KEY}`,
-                    "Content-Type": "application/json",
-                    "HTTP-Referer": "https://github.com/gitme",
-                    "X-Title": "GitMe"
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    "model": "google/gemini-2.0-flash-lite-preview-02-05:free",
-                    "messages": [{ "role": "user", "content": prompt }]
+                    contents: [{ parts: [{ text: prompt }] }]
                 })
             });
 
             if (response.status === 429) throw new Error('429 Rate Limit');
-            if (!response.ok) throw new Error(`OpenRouter API Error: ${response.status}`);
+            if (!response.ok) {
+                const errText = await response.text();
+                throw new Error(`Google Gemini API Error: ${response.status} - ${errText}`);
+            }
 
             const data = await response.json();
-            return data.choices[0].message.content;
+            return data.candidates[0].content.parts[0].text;
         } catch (error) {
             if (error.message.includes('429')) {
                 console.log(`Rate limit hit. Retrying in ${delay / 1000}s...`);

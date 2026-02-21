@@ -1,32 +1,46 @@
 const { summarizeCommit } = require('../services/geminiService');
 const { sendCommitNotification, sendPRNotification, sendIssueNotification } = require('../services/discordService');
 
+const getGithubPayload = (req) => {
+    if (!req.body) return {};
+
+    // GitHub can send JSON directly or form-encoded payload=<json>.
+    if (typeof req.body.payload === 'string') {
+        try {
+            return JSON.parse(req.body.payload);
+        } catch (error) {
+            console.error('Invalid GitHub form payload JSON:', error.message);
+            return {};
+        }
+    }
+
+    return req.body;
+};
+
 const handleWebhook = async (req, res) => {
     const event = req.headers['x-github-event'];
+    const payload = getGithubPayload(req);
+    const action = payload && payload.action ? payload.action : 'n/a';
+    console.log(`Webhook received: ${event} (${action})`);
+
+    if (!payload || Object.keys(payload).length === 0) {
+        console.error("Error: empty payload. Ensure GitHub webhook content type is 'application/json'.");
+        return res.status(400).send('Empty body');
+    }
 
     if (event === 'ping') {
         return res.status(200).send('Pong!');
     }
 
     if (event === 'push') {
-        const payload = req.body;
         const repoName = payload.repository.name;
         const pusherName = payload.pusher.name;
         const commits = payload.commits;
         const branch = payload.ref ? payload.ref.replace('refs/heads/', '') : 'unknown';
         const avatarUrl = payload.sender ? payload.sender.avatar_url : '';
 
-        // Process only the latest commit to avoid spam
         if (commits && commits.length > 0) {
-            const latestCommit = commits[commits.length - 1]; // or iterates all
-            // For now, let's just do the latest one or maybe all? 
-            // The original code did "commits.forEach", let's replicate that logic properly.
-            // Actually original code iterate ALL commits.
-
             console.log(`Received push event for ${repoName} by ${pusherName}`);
-
-            // We will process them sequentially to avoid rate limits? 
-            // Or just fire and forget. Let's do sequential for safety with the retry logic.
 
             for (const commit of commits) {
                 const message = commit.message;
@@ -35,14 +49,13 @@ const handleWebhook = async (req, res) => {
                 const authorForThisCommit = commit.author.name;
                 const commitHash = commit.id;
 
-                // 1. Generate AI Summary
-                const summary = await summarizeCommit(message, null); // Diff is null for now
+                const summary = await summarizeCommit(message, null);
 
-                // 2. Send to Discord
                 await sendCommitNotification(
                     repoName,
                     branch,
-                    authorForThisCommit, // Use commit author, not just pusher
+                    pusherName,
+                    authorForThisCommit,
                     message,
                     url,
                     summary,
@@ -56,13 +69,11 @@ const handleWebhook = async (req, res) => {
     }
 
     if (event === 'pull_request') {
-        const payload = req.body;
-        const action = payload.action;
+        const prAction = payload.action;
         const pr = payload.pull_request;
         const repoName = payload.repository.name;
-        
-        // Only process main actions to avoid spam (e.g., ignore 'labeled', 'assigned')
-        if (['opened', 'closed', 'reopened'].includes(action)) {
+
+        if (['opened', 'closed', 'reopened'].includes(prAction)) {
             const authorName = pr.user.login;
             const authorAvatar = pr.user.avatar_url;
             const prTitle = pr.title;
@@ -75,7 +86,7 @@ const handleWebhook = async (req, res) => {
 
             await sendPRNotification(
                 repoName,
-                action,
+                prAction,
                 prTitle,
                 prUrl,
                 prBody,
@@ -91,14 +102,18 @@ const handleWebhook = async (req, res) => {
     }
 
     if (event === 'issues') {
-        const payload = req.body;
-        const action = payload.action;
+        const issueAction = payload.action;
         const issue = payload.issue;
         const repoName = payload.repository ? payload.repository.name : 'Unknown Repository';
 
-        console.log(`Received Issue Event: ${action} for ${repoName}`);
+        console.log(`Received issue event: ${issueAction} for ${repoName}`);
 
-        if (['opened', 'closed', 'reopened'].includes(action)) {
+        if (!issue) {
+            console.error('Error: payload missing issue object.');
+            return res.status(200).send('Invalid payload');
+        }
+
+        if (['opened', 'closed', 'reopened'].includes(issueAction)) {
             const authorName = issue.user ? issue.user.login : 'Unknown';
             const authorAvatar = issue.user ? issue.user.avatar_url : '';
             const issueTitle = issue.title;
@@ -106,21 +121,27 @@ const handleWebhook = async (req, res) => {
             const issueBody = issue.body || '';
             const timestamp = issue.updated_at || issue.created_at;
 
-            await sendIssueNotification(
+            const sent = await sendIssueNotification(
                 repoName,
-                action,
-                issueTitle,
+                issueAction,
+                issueTitle || 'No Title',
                 issueUrl,
                 issueBody,
                 authorName,
                 authorAvatar,
                 timestamp
             );
+
+            if (!sent) {
+                console.error('Failed to send issue notification to Discord. Check discordService logs.');
+            }
+        } else {
+            console.log(`Ignoring issue action: ${issueAction}`);
         }
         return res.status(200).send('Issue Event processed');
     }
 
-    res.status(200).send('Event received');
+    return res.status(200).send('Event received');
 };
 
 module.exports = { handleWebhook };
