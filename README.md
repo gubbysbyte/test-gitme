@@ -5,14 +5,14 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Discord.js](https://img.shields.io/badge/Discord.js-v14-5865F2.svg)](https://discord.js.org/)
 
-GitMe is a Discord bot that watches your GitHub repositories. It tracks **Commits**, **Pull Requests**, and **Issues**, using **Google Gemini 2.5 Flash** to:
+GitMe is a Discord bot that watches your GitHub repositories. It tracks **Commits**, **Pull Requests**, and **Issues**, using **LM Studio (Gemma)** to:
 1.  Analyze technical commit messages.
-2.  Summarize changes into simple, layman terms.
+2.  Summarize changes into simple, layman terms locally.
 3.  Post beautiful, color-coded notifications to your Discord channel.
 
 ## Features
 *   🚀 **Lightweight**: Built with Node.js, Express, and Discord.js.
-*   🧠 **AI-Powered**: Uses Google's generative AI to explain code changes.
+*   🧠 **AI-Powered**: Uses a local LLM via LM Studio to explain code changes without API costs.
 *   🔔 **Event Tracking**:
     *   **Commits**: AI summaries, branch info, and commit hashes.
     *   **Pull Requests**: Notifications for Opened, Closed, Reopened, and Merged events.
@@ -20,14 +20,14 @@ GitMe is a Discord bot that watches your GitHub repositories. It tracks **Commit
 *   🎨 **Smart Embeds**:
     *   **Dynamic Colors**: Green for Features/Opens, Red for Fixes/Closures, Purple for Merges.
     *   **Rich Details**: Includes author avatars, branch names, and truncated messages for readability.
-*   🛡️ **Smart Limits**: Includes auto-retry logic for API rate limits (429 errors).
+*   🛡️ **Error Handling**: Robust error handling for local API connection issues.
 *   📂 **Modular Architecture**: Professional structure with separate services, controllers, and config.
 
 ## Prerequisites
 *   [Node.js](https://nodejs.org/) (v18 or higher)
 *   [Ngrok](https://ngrok.com/) (to expose your local server to GitHub)
 *   A Discord Account & Server
-*   A Google Cloud Project (for Gemini API)
+*   [LM Studio](https://lmstudio.ai/) (to run the local LLM)
 
 ---
 
@@ -47,7 +47,8 @@ npm install
 ```env
 DISCORD_TOKEN="your_bot_token_here"
 DISCORD_CHANNEL_ID="your_channel_id_here"
-GEMINI_API_KEY="your_gemini_api_key_here"
+LM_STUDIO_BASE_URL="http://localhost:1234/v1"
+LM_STUDIO_MODEL="google/gemma-3-4b"
 PORT=3000
 ```
 *(Make sure to keep the quotes around the values!)*
@@ -55,7 +56,8 @@ PORT=3000
 #### Where to get the keys:
 *   **DISCORD_TOKEN**: Go to [Discord Developer Portal](https://discord.com/developers/applications) -> New Application -> Bot -> Reset Token.
 *   **DISCORD_CHANNEL_ID**: In Discord app, go to User Settings -> Advanced -> Enable Developer Mode. Then right-click your target channel -> Copy ID.
-*   **GEMINI_API_KEY**: Go to [Google AI Studio](https://aistudio.google.com/app/apikey) -> Create API Key.
+*   **LM_STUDIO_BASE_URL**: Usually `http://localhost:1234/v1` (Default port for LM Studio).
+*   **LM_STUDIO_MODEL**: The identifier of the model loaded in LM Studio (e.g., `google/gemma-3-4b`).
 
 ### 3. Invite Bot to Server
 1.  In Discord Developer Portal -> OAuth2 -> URL Generator.
@@ -109,6 +111,13 @@ node tests/test-manual-events.js issue
 node tests/test-manual-events.js pr
 ```
 
+### AI Summary Test
+Test if your LM Studio integration is working correctly:
+```bash
+npm run test:gemma
+```
+*(Make sure LM Studio is running and the model is loaded!)*
+
 ---
 
 ## 🐛 Troubleshooting
@@ -117,8 +126,8 @@ node tests/test-manual-events.js pr
 | :--- | :--- | :--- |
 | **TokenInvalid** | Empty `.env` or bad token | Check `.env` file. Ensure values are in quotes `""`. |
 | **Missing Access** | Bot not in channel/server | Invite bot to server. Give `View Channel` & `Send Message` permissions. |
-| **Gemini 404** | Invalid Model Name | Use `gemini-2.5-flash` or `gemini-flash-latest` (already set in code). |
-| **Rate Limit (429)** | Hitting API too fast | Wait. The bot has auto-retry logic and will try again in 2s, 4s, 8s. |
+| **ECONNREFUSED** | LM Studio server not running | Open LM Studio and ensure the Local Server is **Started**. |
+| **Model Not Found** | Wrong model name in `.env` | Ensure `LM_STUDIO_MODEL` matches the identifier in LM Studio. |
 | **Webhook 404** | Wrong URL in GitHub | Ensure Payload URL ends with `/webhook` (e.g., `...ngrok-free.app/webhook`). |
 
 ## ☁️ Deployment (Render + UptimeRobot)

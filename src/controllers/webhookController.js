@@ -1,4 +1,4 @@
-const { summarizeCommit } = require('../services/geminiService');
+const { summarizeCommit } = require('../services/aiService');
 const { sendCommitNotification, sendPRNotification, sendIssueNotification } = require('../services/discordService');
 
 const getGithubPayload = (req) => {
