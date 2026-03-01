@@ -19,13 +19,13 @@ app.post('/webhook', handleWebhook);
 
 // Start Server
 const startServer = async () => {
-    // 1. Connect to Discord first
-    await initDiscord();
-
-    // 2. Start Express
+    // Start Express first so hosting platforms can detect a bound port quickly.
     app.listen(config.PORT, () => {
         console.log(`Server is running on port ${config.PORT}`);
     });
+
+    // Connect to Discord in background.
+    await initDiscord();
 };
 
 startServer();

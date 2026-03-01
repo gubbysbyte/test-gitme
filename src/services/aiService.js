@@ -1,6 +1,10 @@
 const config = require('../config/env');
 
 async function summarizeCommit(commitMessage, diff) {
+    if (!config.AI_SUMMARY_ENABLED) {
+        return `Code was updated: ${commitMessage}`;
+    }
+
     const prompt = `
     You are a helpful coding assistant. 
     Explain this git commit to a non-technical person (User) in 1-2 short sentences.
@@ -37,7 +41,7 @@ async function summarizeCommit(commitMessage, diff) {
         return data.choices[0].message.content;
     } catch (error) {
         console.error("Error generating summary with LM Studio:", error);
-        return "Could not generate summary. Check server console for details.";
+        return `Code was updated: ${commitMessage}`;
     }
 }
 
