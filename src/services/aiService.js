@@ -8,7 +8,6 @@ async function summarizeCommit(commitMessage, diff) {
     const prompt = `
     You are a helpful coding assistant. 
     Explain this git commit to a non-technical person (User) in 1-2 short sentences.
-    Focus on "What changed" and "Why it matters".
     Do not mention "technical details" like file names or line numbers unless crucial.
     
     Commit Message: "${commitMessage}"
