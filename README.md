@@ -1,4 +1,4 @@
-# GitMe - AI Git Summarizer Bot 🤖
+# GitMe - AI Git Summarizer Bot 
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-v18%2B-green.svg)](https://nodejs.org/)
@@ -11,17 +11,17 @@ GitMe is a Discord bot that watches your GitHub repositories. It tracks **Commit
 3.  Post beautiful, color-coded notifications to your Discord channel.
 
 ## Features
-*   🚀 **Lightweight**: Built with Node.js, Express, and Discord.js.
-*   🧠 **AI-Powered**: Uses a local LLM via LM Studio to explain code changes without API costs.
-*   🔔 **Event Tracking**:
+*    **Lightweight**: Built with Node.js, Express, and Discord.js.
+*    **AI-Powered**: Uses a local LLM via LM Studio to explain code changes without API costs.
+*    **Event Tracking**:
     *   **Commits**: AI summaries, branch info, and commit hashes.
     *   **Pull Requests**: Notifications for Opened, Closed, Reopened, and Merged events.
     *   **Issues**: Notifications for Opened, Closed, and Reopened issues.
-*   🎨 **Smart Embeds**:
+*    **Smart Embeds**:
     *   **Dynamic Colors**: Green for Features/Opens, Red for Fixes/Closures, Purple for Merges.
     *   **Rich Details**: Includes author avatars, branch names, and truncated messages for readability.
-*   🛡️ **Error Handling**: Robust error handling for local API connection issues.
-*   📂 **Modular Architecture**: Professional structure with separate services, controllers, and config.
+*    **Error Handling**: Robust error handling for local API connection issues.
+*    **Modular Architecture**: Professional structure with separate services, controllers, and config.
 
 ## Prerequisites
 *   [Node.js](https://nodejs.org/) (v18 or higher)
