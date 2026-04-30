@@ -1,4 +1,4 @@
-# GitMe - AI Git Summarizer Bot 🤖
+# GitMe - AI Git Summarizer Bot 
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-v18%2B-green.svg)](https://nodejs.org/)
