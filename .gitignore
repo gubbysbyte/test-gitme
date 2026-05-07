@@ -34,6 +34,5 @@ ehthumbs.db
 Thumbs.db
 
 # Optional: if you have a build output
-dist/
 build/
 coverage/

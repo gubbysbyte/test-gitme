@@ -1,0 +1,21 @@
+{
+  "action": "opened",
+  "repository": {
+    "name": "gitme",
+    "full_name": "gubbysbyte/gitme"
+  },
+  "pull_request": {
+    "title": "feat: add GitHub Action support",
+    "html_url": "https://github.com/gubbysbyte/gitme/pull/1",
+    "body": "This PR adds a reusable GitHub Action that sends Discord notifications without needing a server.",
+    "merged": false,
+    "updated_at": "2026-05-07T12:00:00Z",
+    "created_at": "2026-05-07T11:00:00Z",
+    "user": {
+      "login": "kailash1602-exe",
+      "avatar_url": "https://avatars.githubusercontent.com/u/kailash1602-exe"
+    },
+    "base": { "ref": "main" },
+    "head": { "ref": "dev-kailash" }
+  }
+}

@@ -79,7 +79,8 @@ npm run dev
    src/
    ├── config/       # Environment & configuration
    ├── controllers/  # Request handlers (webhook logic)
-   ├── services/     # Business logic (Discord, Gemini)
+   ├── middleware/   # Signature verification
+   ├── services/     # Business logic (Discord, AI)
    └── index.js      # App entry point
    ```
 

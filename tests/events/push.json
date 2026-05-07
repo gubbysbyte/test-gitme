@@ -1,0 +1,25 @@
+{
+  "ref": "refs/heads/main",
+  "repository": {
+    "name": "gitme",
+    "full_name": "gubbysbyte/gitme"
+  },
+  "pusher": {
+    "name": "kailash1602-exe"
+  },
+  "sender": {
+    "login": "kailash1602-exe",
+    "avatar_url": "https://avatars.githubusercontent.com/u/kailash1602-exe"
+  },
+  "commits": [
+    {
+      "id": "abc1234def5678901234567890abcdef12345678",
+      "message": "feat: add webhook signature verification",
+      "url": "https://github.com/gubbysbyte/gitme/commit/abc1234def5678",
+      "timestamp": "2026-05-07T12:00:00Z",
+      "author": {
+        "name": "Kailash"
+      }
+    }
+  ]
+}

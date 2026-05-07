@@ -163,17 +163,17 @@ Update your GitHub Webhook URL to:
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details on how to get started.
+Contributions are welcome! Please read our [Contributing Guide](docs/CONTRIBUTING.md) for details on how to get started.
 
-Please note that this project has a [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you agree to abide by its terms.
+Please note that this project has a [Code of Conduct](docs/CODE_OF_CONDUCT.md). By participating, you agree to abide by its terms.
 
 ## 🔒 Security
 
-To report a security vulnerability, please see our [Security Policy](SECURITY.md).
+To report a security vulnerability, please see our [Security Policy](docs/SECURITY.md).
 
 ## 📝 Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) for a list of notable changes.
+See [docs/CHANGELOG.md](docs/CHANGELOG.md) for a list of notable changes.
 
 ## License
 

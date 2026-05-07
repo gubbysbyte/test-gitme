@@ -1,0 +1,16 @@
+name: 'GitMe Discord Notify'
+description: 'Send GitHub event notifications to a Discord channel via webhook'
+author: 'Kailash (https://github.com/gubbysbyte)'
+
+branding:
+  icon: 'bell'
+  color: 'blue'
+
+inputs:
+  discord-webhook-url:
+    description: 'Discord webhook URL (from Server Settings > Integrations > Webhooks)'
+    required: true
+
+runs:
+  using: 'node24'
+  main: 'dist/index.js'

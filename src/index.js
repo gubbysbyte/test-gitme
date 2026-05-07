@@ -3,19 +3,22 @@ const bodyParser = require('body-parser');
 const config = require('./config/env');
 const { initDiscord } = require('./services/discordService');
 const { handleWebhook } = require('./controllers/webhookController');
+const { verifySignature } = require('./middleware/verifySignature');
 
 const app = express();
 
+const captureRawBody = (req, res, buf) => { req.rawBody = buf; };
+
 // Middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ verify: captureRawBody }));
+app.use(bodyParser.urlencoded({ extended: true, verify: captureRawBody }));
 
 // Routes
 app.get('/', (req, res) => {
     res.send('GitMe Bot Server is running (Refactored)!');
 });
 
-app.post('/webhook', handleWebhook);
+app.post('/webhook', verifySignature, handleWebhook);
 
 // Start Server
 const startServer = async () => {
