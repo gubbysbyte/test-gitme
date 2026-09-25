@@ -32,6 +32,43 @@ const getIssueColor = (action) => {
     return 0xE67E22; // Orange
 };
 
+const sendPushNotification = async (repoName, branch, pusherName, commits, headSummary, avatarUrl) => {
+    try {
+        const channel = await client.channels.fetch(config.DISCORD_CHANNEL_ID);
+        if(!channel) {
+            console.error("Channel not found!");
+            return false;
+        }
+        const headCommit = commits[commits.length - 1];
+        const maxListed = 10;
+        const commitLines = commits.slice(0, maxListed).map(commit => `- ${commit.message} (${commit.id.substring(0, 7)})`).join('\n');
+        const extraCount = commits.length - maxListed;
+        const commitList = commitLines + (extraCount > 0 ? `\n...and ${extraCount} more commits.` : '');
+
+        const embed = new EmbedBuilder()
+            .setColor(getEmbedColor())
+            .setTitle(`Repository: ${repoName}`)
+            .setURL(headCommit.url)
+            .setAuthor({ name: pusherName, iconURL: avatarUrl })
+            .setThumbnail(avatarUrl)
+            .setDescription(`**Summary:**\n${headSummary}`)
+            .addFields(
+                { name: 'Branch', value: branch, inline: true },
+                { name: 'Commits', value: `${commits.length}`, inline: true },
+                { name: 'Commit List', value: commitList },
+                { name: 'Date', value: new Date(headCommit.timestamp).toLocaleDateString() }
+            )
+            .setFooter({ text: 'GitMe' })
+            .setTimestamp();
+
+        await channel.send({ embeds: [embed] });
+        return true;
+    } catch (error){
+        console.error("Error sending push notification to Discord:", error);
+        return false;
+    }
+}
+
 const sendCommitNotification = async (repoName, branch, pusherName, committerName, message, url, summary, timestamp, commitHash, avatarUrl) => {
     try {
         const channel = await client.channels.fetch(config.DISCORD_CHANNEL_ID);
@@ -148,4 +185,4 @@ const sendIssueNotification = async (repoName, action, issueTitle, issueUrl, iss
     }
 };
 
-module.exports = { initDiscord, sendCommitNotification, sendPRNotification, sendIssueNotification, client };
+module.exports = { initDiscord, sendCommitNotification, sendPRNotification, sendIssueNotification, sendPushNotification, client };

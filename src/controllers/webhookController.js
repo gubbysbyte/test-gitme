@@ -1,5 +1,5 @@
 const { summarizeCommit } = require('../services/aiService');
-const { sendCommitNotification, sendPRNotification, sendIssueNotification } = require('../services/discordService');
+const { sendCommitNotification, sendPRNotification, sendIssueNotification, sendPushNotification } = require('../services/discordService');
 
 const getGithubPayload = (req) => {
     if (!req.body) return {};
@@ -39,34 +39,30 @@ const handleWebhook = async (req, res) => {
         const branch = payload.ref ? payload.ref.replace('refs/heads/', '') : 'unknown';
         const avatarUrl = payload.sender ? payload.sender.avatar_url : '';
 
+        if(branch !== 'main'){
+            console.log(`Ignoring push to non-main branch: ${branch}`);
+            return res.status(200).send('Ignored non-main push');
+        }
+
         if (commits && commits.length > 0) {
             console.log(`Received push event for ${repoName} by ${pusherName}`);
 
-            for (const commit of commits) {
-                const message = commit.message;
-                const url = commit.url;
-                const timestamp = commit.timestamp;
-                const authorForThisCommit = commit.author.name;
-                const commitHash = commit.id;
+                const headCommit = commits[commits.length - 1];
+                const headSummary = await summarizeCommit(headCommit.message, null);
 
-                const summary = await summarizeCommit(message, null);
-
-                await sendCommitNotification(
+                await sendPushNotification(
                     repoName,
                     branch,
                     pusherName,
-                    authorForThisCommit,
-                    message,
-                    url,
-                    summary,
-                    timestamp,
-                    commitHash,
+                    commits,
+                    headSummary,
                     avatarUrl
                 );
             }
-        }
+        
         return res.status(200).send('Webhook processed');
     }
+    
 
     if (event === 'pull_request') {
         const prAction = payload.action;
